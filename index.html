@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Story Written in the Stars</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <style>
+        :root { --pink: #ff85a1; --bg: #030303; }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; height: 100%; }
+        
+        /* Memory Background Photo */
+        .bg-memory { position: fixed; inset: 0; z-index: -2; background-image: url('https://i.postimg.cc/bwjzMPDG/IMG-20260313-WA0008.jpg'); background-size: cover; background-position: center; filter: blur(50px) brightness(0.1); opacity: 0; transition: opacity 3s ease; }
+
+        /* Dark Edge Vignette Overlay */
+        .vignette { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.8) 100%); }
+
+        /* Floating Heart Overlay */
+        .heart-particle { position: absolute; color: var(--pink); pointer-events: none; z-index: 50; filter: drop-shadow(0 0 5px #ff4d6d); }
+
+        /* Gate Screen */
+        .gate { position: fixed; inset: 0; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; transition: 1.5s ease; }
+        .btn-play { padding: 18px 50px; border: 1px solid var(--pink); background: transparent; color: var(--pink); cursor: pointer; letter-spacing: 5px; font-size: 0.75rem; transition: 0.5s; border-radius: 50px; font-weight: 600; text-transform: uppercase; }
+        .btn-play:hover { background: var(--pink); color: #fff; box-shadow: 0 0 40px rgba(255, 133, 161, 0.5); }
+
+        /* Story Text Container */
+        .story-container { position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; text-align: center; z-index: 10; padding: 20px; }
+        .text-step { position: absolute; font-size: 1.5rem; font-weight: 300; opacity: 0; filter: blur(10px); width: 85%; line-height: 2; text-shadow: 0 0 15px rgba(255,255,255,0.5); }
+        .text-step span { font-family: 'Playfair Display', serif; font-style: italic; color: var(--pink); text-shadow: 0 0 15px var(--pink); }
+
+        /* Final Scene Container */
+        .final-section { display: none; flex-direction: column; align-items: center; opacity: 0; z-index: 20; padding: 20px; text-align: center; }
+        .photo-card { width: 280px; height: 380px; border-radius: 20px; overflow: hidden; border: 6px solid #fff; box-shadow: 0 0 60px rgba(255,133,161,0.4); transform: rotate(-3deg); margin-bottom: 30px; }
+        .photo-card img { width: 100%; height: 100%; object-fit: cover; }
+
+        .hbd-title { font-family: 'Playfair Display', serif; font-size: 2.8rem; margin: 0 0 20px 0; color: var(--pink); text-shadow: 0 0 20px var(--pink); }
+        .long-wish-container { max-width: 450px; background: rgba(0,0,0,0.5); padding: 25px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
+        .long-wish-en { font-size: 1rem; line-height: 1.8; color: #ddd; font-weight: 300; letter-spacing: 0.5px; }
+    </style>
+</head>
+<body>
+
+<div class="bg-memory" id="bg-memory"></div>
+<div class="vignette"></div>
+
+<div class="gate" id="gate">
+    <p style="color: #555; margin-bottom: 20px; font-size: 0.8rem; letter-spacing: 3px; font-weight: 300;">DECRYPTING MEMORIES_vF</p>
+    <button class="btn-play" onclick="startStory()">OPEN YOUR GIFT</button>
+</div>
+
+<div class="story-container">
+    <div class="text-step" id="step1">Sometimes, I find myself just sitting here...</div>
+    <div class="text-step" id="step2">Thinking about how incredibly lucky I am <span>to have found you.</span></div>
+    <div class="text-step" id="step3">Out of billions of people in this world...</div>
+    <div class="text-step" id="step4">Somehow, the stars aligned <span>and brought us together.</span></div>
+    <div class="text-step" id="step5">You are more than just my partner.</div>
+    <div class="text-step" id="step6">You are my peace, my home, <span>my safest place to land.</span></div>
+    <div class="text-step" id="step7">Thank you for being born and for filling my life with color.</div>
+    <div class="text-step" id="step8">I can't promise you the world, but I promise <span>to always be here.</span></div>
+    <div class="text-step" id="step9">And today, I just want to say...</div>
+
+    <div class="final-section" id="final">
+        <div class="photo-card" id="photo-card">
+            <img src="https://i.postimg.cc/bwjzMPDG/IMG-20260313-WA0008.jpg" alt="A Memory of You">
+        </div>
+        <h1 class="hbd-title">Happy Birthday! ❤️</h1>
+        <div class="long-wish-container">
+            <div class="long-wish-en">
+                "To the one who holds my heart. I wish I could gather all the happiness in the world and give it to you today. May your days be filled with endless joy, and your dreams find their way to you. I promise to stand by you, in every season of life. Happy birthday, my dearest! ❤️"
+            </div>
+        </div>
+    </div>
+</div>
+
+<audio id="audio" src="https://cdn.pixabay.com/audio/2022/10/30/audio_346743b593.mp3" loop></audio>
+
+<script>
+    const tl = gsap.timeline();
+    function createHeart() {
+        const heart = document.createElement('div');
+        heart.innerHTML = '❤️';
+        heart.className = 'heart-particle';
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.top = '110vh';
+        heart.style.fontSize = (Math.random() * 15 + 10) + 'px';
+        heart.style.opacity = Math.random();
+        document.body.appendChild(heart);
+        gsap.to(heart, { y: '-120vh', x: (Math.random() - 0.5) * 200, rotation: Math.random() * 360, duration: Math.random() * 3 + 4, ease: "none", onComplete: () => heart.remove() });
+    }
+    function startStory() {
+        document.getElementById('gate').style.opacity = '0';
+        document.getElementById('audio').play();
+        setTimeout(() => {
+            document.getElementById('gate').style.display = 'none';
+            document.getElementById('bg-memory').style.opacity = '0.5'; 
+            setInterval(createHeart, 350); 
+            runSequence();
+        }, 1500);
+    }
+    function runSequence() {
+        const steps = ['#step1', '#step2', '#step3', '#step4', '#step5', '#step6', '#step7', '#step8', '#step9'];
+        steps.forEach((step, index) => {
+            tl.to(step, { opacity: 1, filter: "blur(0px)", duration: 2, ease: "power2.out" })
+              .to(step, { opacity: 0, filter: "blur(10px)", duration: 1.5, ease: "power2.in" }, "+=2.5");
+        });
+        tl.to("#final", {
+            onStart: () => { 
+                document.getElementById('final').style.display = 'flex'; 
+                document.getElementById('bg-memory').style.opacity = '0.1';
+            },
+            opacity: 1,
+            y: -20,
+            duration: 4,
+            ease: "power4.out"
+        });
+        tl.fromTo("#photo-card", { scale: 0.9 }, { scale: 1, duration: 20, ease: "linear", repeat: -1 });
+    }
+</script>
+</body>
+  </html>
+  
